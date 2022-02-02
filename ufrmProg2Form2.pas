@@ -17,11 +17,9 @@ type
     procedure RestoreSelf;
     procedure BringSelfToFront;
   public
-    procedure RestoreForm;
+    procedure RestoreToFront;
   end;
 
-var
-  Form2: TForm2;
 
 implementation
 
@@ -41,18 +39,18 @@ begin
   WindowState := wsNormal;
 end;
 
+procedure TForm2.RestoreToFront;
+begin
+  RestoreSelf;
+  BringSelfToFront;
+end;
+
 procedure TForm2.BringToFrontMessage(var Msg: TMessage);
 begin
   OutputDebugString('message event trapped');
   RestoreSelf;
   BringSelfToFront;
   OutputDebugString('message event handled');
-end;
-
-procedure TForm2.RestoreForm;
-begin
-  RestoreSelf;
-  BringSelfToFront;
 end;
 
 end.

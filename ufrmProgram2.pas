@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.AppEvnts, Vcl.ExtCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.AppEvnts, Vcl.ExtCtrls,
+  ufrmProg2Form2;
 
 type
   TfrmProgram2 = class(TForm)
@@ -17,10 +18,12 @@ type
     procedure Button2Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure ApplicationEvents1Message(var Msg: tagMSG; var Handled: Boolean);
+    procedure FormCreate(Sender: TObject);
   private
     const
       BRINGTOFRONT_MESSAGE = WM_APP + 100;
-
+    var
+      ModalForm: TForm2;
     procedure RestoreSelf;
     procedure BringSelfToFront;
   end;
@@ -32,8 +35,6 @@ implementation
 
 {$R *.dfm}
 
-uses
-  ufrmProg2Form2;
 
 procedure TfrmProgram2.RestoreSelf;
 begin
@@ -56,7 +57,11 @@ begin
 
     RestoreSelf;
     BringSelfToFront;
-    Form2.RestoreForm;
+
+    if Assigned(ModalForm) then
+      ModalForm.RestoreToFront;
+
+    Handled := True;
 
     OutputDebugString('message event handled');
   end;
@@ -64,13 +69,26 @@ end;
 
 procedure TfrmProgram2.Button1Click(Sender: TObject);
 begin
-  Form2.ShowModal;
+  if not assigned(ModalForm) then begin
+    ModalForm := TForm2.Create(Application.MainForm);
+    try
+      ModalForm.ShowModal;
+    finally
+      ModalForm.Free;
+      ModalForm := nil;
+    end;
+  end;
 end;
 
 procedure TfrmProgram2.Button2Click(Sender: TObject);
 begin
   Timer1.Enabled := True;
   OutputDebugString('restore timer started');
+end;
+
+procedure TfrmProgram2.FormCreate(Sender: TObject);
+begin
+  ModalForm := nil;
 end;
 
 procedure TfrmProgram2.Timer1Timer(Sender: TObject);
@@ -80,7 +98,7 @@ begin
 
   RestoreSelf;
   BringSelfToFront;
-  Form2.RestoreForm;
+  ModalForm.RestoreToFront;
 
   OutputDebugString('timed restore finished');
 end;
