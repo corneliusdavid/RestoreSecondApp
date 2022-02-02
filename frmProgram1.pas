@@ -57,9 +57,8 @@ begin
 
   if Prg2Handle = 0 then
     ShowMessage('Program 2 is not running.')
-  else begin
+  else
     PostMessage(Prg2Handle, BRINGTOFRONT_MESSAGE, 0, 0);
-  end;
 end;
 
 function TForm1.GetWindowHandle(const WindowName: string): HWnd;
